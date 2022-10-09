@@ -34,3 +34,5 @@ jobs:
       uses: actions-rust-lang/rustfmt@v1.0.0
     - name: rust-audit-check
       uses: actions-rs/audit-check@v1.2.0
+      with: 
+        token: ${{ github.token }}
