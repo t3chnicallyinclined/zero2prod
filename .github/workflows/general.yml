@@ -6,20 +6,25 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  test:
-    name: rust-cargo
+  test: 
+    name: Test
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3.1.0
+      - uses: actions-rs/toolchain@v1.0.6
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
       - uses: actions-rs/cargo@v1.0.1
-      - with:
-    # Cargo command to run (ex. `check` or `build`)
-         command: test
+        with:
+          command: test
 
   fmt:
     name: Rustfmt
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.1.0
       - uses: actions-rs/toolchain@v1.0.6
         with:
           toolchain: stable
@@ -34,7 +39,7 @@ jobs:
     name: Clippy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3.1.0
       - uses: actions-rs/toolchain@v1.0.6
         with:
           toolchain: stable
@@ -50,8 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
-
+        uses: actions/checkout@v3.1.0
       - name: Install stable toolchain
         uses: actions-rs/toolchain@v1.0.6
         with:
