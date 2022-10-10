@@ -7,18 +7,13 @@ env:
 
 jobs:
   test:
-    name: Test
+    name: rust-cargo
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1.0.6
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - uses: actions-rs/toolchain@v1.0.6
-        with:
-          command: test
+      - uses: actions-rs/cargo@v1.0.1
+      - with:
+    # Cargo command to run (ex. `check` or `build`)
+         command: test
 
   fmt:
     name: Rustfmt
