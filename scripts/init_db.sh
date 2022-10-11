@@ -2,17 +2,17 @@
 set -x
 set -eo pipefail
 
-if ! [ -x "$(command -v psql")"]; then
-    echo >&2 "Error: psql is not installed."
-    exit 1
+if ! [ -x "$(command -v psql)" ]; then
+  echo >&2 "Error: psql is not installed."
+  exit 1
 fi
 
-if ! [ -x "$(command -v sqlx")"]; then
-    echo >&2 "Error: sqlx is not installed."
-    echo >&2 "Use:"
-    echo >&2 "    cargo install --version='~0.6' sqlx-cli --no-default-features --features rustls,postgres"
-    echo >&2 "to install it."
-    exit 1
+if ! [ -x "$(command -v sqlx)" ]; then
+  echo >&2 "Error: sqlx is not installed."
+  echo >&2 "Use:"
+  echo >&2 "    cargo install --version='~0.6' sqlx-cli --no-default-features --features rustls,postgres"
+  echo >&2 "to install it."
+  exit 1
 fi
 
 # Check if a custom user has been set, otherwise default to 'postgres'
@@ -26,8 +26,15 @@ DB_PORT="${POSTGRES_PORT:=5432}"
 # Check if a custom host has been set, otherwise default to 'localhost'
 DB_HOST="${POSTGRES_HOST:=localhost}"
 
-if [[ -z "${SKIP_DOCKER}"]]
+if [[ -z "${SKIP_DOCKER}" ]]
 then
+  # if a postgres container is running, print instructions to kill it and exit
+  RUNNING_POSTGRES_CONTAINER=$(docker ps --filter 'name=postgres' --format '{{.ID}}')
+  if [[ -n $RUNNING_POSTGRES_CONTAINER ]]; then
+    echo >&2 "there is a postgres container already running, kill it with"
+    echo >&2 "    docker kill ${RUNNING_POSTGRES_CONTAINER}"
+    exit 1
+  fi
   # Launch postgres using Docker
   docker run \
       -e POSTGRES_USER=${DB_USER} \
@@ -37,6 +44,7 @@ then
       -d \
       --name "postgres_$(date '+%s')" \
       postgres -N 1000
+      # ^ Increased maximum number of connections for testing purposes
 fi
 
 # Keep pinging Postgres until it's ready to accept commands
